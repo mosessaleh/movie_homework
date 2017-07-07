@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Movies rendering</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/g/jquery@2.2.4,bootstrap@3.3.6,mark.js@8.6.0(jquery.mark.min.js)"></script>
+
+
+</head>
+<style>
+	.movie {
+		width: 33%;
+		float: left;
+		text-align: center;
+	}
+	* {
+		boxing-size: border-box;
+	}
+</style>
+<body>
+	<h2>Movie collection</h2><button style='display:none;' onclick="window.location.href='index.html';" class="back">Back</button><br>
+	<input type="text" name="keyword" placeholder="Search by movie"></input>
+	<div id="movies"></div>
+	<script  type="text/template" id="template">
+		<div class='movie3'>
+			<h2 class='moviename'></h2>
+			<p class='story'></p>
+		</div>
+	</script>
+      <button id="getMovies">
+        Get Movies By getJSON
+      </button><br>
+	  <button id="getMovies1">
+        Get Movies By Templating
+      </button>
+    </body>
+    <script>
+		
+	$(document).ready(function() {
+		// Get Movies By getJSON
+		$("#getMovies").on("click", function() {
+			$.getJSON("movies_20.json", function(json) {
+				var html = "";
+					json.forEach(function(val){
+					html += "<div class='movie'>";
+					html += "<h2 class='movietitle'>" + val.title + " (" + val.year + ")</h2>";
+					html += "<img src='" + val.posterurl + "' title='" + val.storyline + " />";
+					html += "</div>";
+				});
+				$("#movies").html(html);
+			});
+			$("#getMovies").css("display", "none");
+			$("#getMovies1").css("display", "none");
+			$(".back").css("display", "block");
+		});
+		// Get Movies by templating
+		var template = $('#template').html();
+		$("#getMovies1").on("click", function() {
+			$.getJSON("movies_20", function(json) {
+				json.forEach(function(val) {
+					var mov = $(template).clone();
+					mov.find(".moviename").text(val.title);
+					mov.find(".story").text(val.storyline);
+					$("#movies").append(mov);
+				});
+				$("#getMovies").css("display", "none");
+				$("#getMovies1").css("display", "none");
+				$(".back").css("display", "block");
+			});
+		});
+		$(function() {
+		  var $input = $("input[name='keyword']"),
+			$context = $("#movies");
+		    $input.on("input", function() {
+				var term = $(this).val();
+				$context.show().unmark();
+				if (term) {
+					$context.mark(term, {
+						done: function() {
+							$context.not(":has(mark)").hide();
+						}
+					});
+				}
+		  });
+		});
+	});
+    </script>
+</html>
